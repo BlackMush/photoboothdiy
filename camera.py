@@ -9,7 +9,7 @@ from threading import Thread
 from pygame.locals import *
 from time import sleep
 from PIL import Image, ImageDraw
-#from gpiozero import Button
+from gpiozero import Button
 
 
 # initialise global variables
@@ -45,6 +45,8 @@ backgroundPicture = background.convert()  # Convert it to a background
 
 transform_x = infoObject.current_w # how wide to scale the jpg when replaying
 transfrom_y = infoObject.current_h # how high to scale the jpg when replaying
+
+
 
 # Load the background template
 print (templatePath)
@@ -361,11 +363,10 @@ def WaitForEvent():
     UpdateDisplay()
 
     while NotEvent:
-        input_state = GPIO.input(BUTTON_PIN)
-        if input_state == False:
-                NotEvent = False			
-                return  
-
+        # input_state = GPIO.input(BUTTON_PIN)
+        # if input_state == False:
+        #         NotEvent = False			
+        #         return  
         for event in pygame.event.get():			
                 if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
@@ -377,18 +378,20 @@ def WaitForEvent():
 
 def main(threadName, *args):
     GPIO.cleanup()
-    InitFolder()
+#     InitFolder()
     InitGPIO()
+    button = Button(BUTTON_PIN)
+    button.when_pressed = Shoot()
 #     InitPyGame()
-    while True:
-        Message = 'Ready'
-        UpdateDisplay()
-        show_image('images/photobooth.bmp')
-        time.sleep(3)
-        WaitForEvent()
-        time.sleep(0.2)
-        #TakePictures()
-    GPIO.cleanup()
+#     while True:
+#         Message = 'Ready'
+#         UpdateDisplay()
+#         show_image('images/photobooth.bmp')
+#         time.sleep(3)
+#         WaitForEvent()
+#         time.sleep(0.2)
+#         #TakePictures()
+#     GPIO.cleanup()
 
 
 # launch the main thread
