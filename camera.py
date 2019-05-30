@@ -1,6 +1,8 @@
+#!/usr/bin/env python
 import pygame
 import time
 import os
+import shutil
 import PIL.Image
 import RPi.GPIO as GPIO
 import subprocess
@@ -9,7 +11,6 @@ from threading import Thread
 from pygame.locals import *
 from time import sleep
 from PIL import Image, ImageDraw
-from gpiozero import Button
 
 
 # initialise global variables
@@ -19,11 +20,11 @@ BackgroundColor = ""
 CountDownPhoto = ""
 CountPhotoOnCart = ""
 SmallMessage = ""  # SmallMessage is a lower banner message
-TotalImageCount = 0  # Counter for Display and to monitor paper usage
-PhotosPerCart = 30  # Selphy takes 16 sheets per tray
+Filename = ""
+TmpFilename = "/home/pi/git-repos/photoboothdiy/tmp/pic.jpg"
+imagefolder = "/media/usb32/photobooth/"
+TotalImageCount = 0  # Counter for Display 
 imagecounter = 0
-imagefolder = '/media/usb32/photobooth'
-templatePath = os.path.join('/home/pi/git-repos/photoboothdiy/Photos', 'Template', "template.png") #Path of template image
 ImageShowed = False
 Printing = False
 BUTTON_PIN = 16
@@ -46,23 +47,9 @@ backgroundPicture = background.convert()  # Convert it to a background
 transform_x = infoObject.current_w # how wide to scale the jpg when replaying
 transfrom_y = infoObject.current_h # how high to scale the jpg when replaying
 
-
-
-# Load the background template
-print (templatePath)
-bgimage = PIL.Image.open(templatePath)
-
-def InitGPIO():
-        #Setup GPIO
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)        
-
-def Shoot():
-    print("start")
-    subprocess.call("~/git-repos/raspi-photobooth/gphoto2.sh", shell=True)    
-    print ("end")
-    time.sleep(5)
-    return "/home/pi/git-repos/photoboothdiy/tmp/capt0000.jpg"
+#Setup GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     
 # A function to handle keyboard/mouse/device input events
 def input(events):
@@ -116,9 +103,9 @@ def InitFolder():
     if not os.path.isdir(imagefolder):	
         os.makedirs(imagefolder)	
             
-    imagefolder2 = os.path.join(imagefolder, 'images')
-    if not os.path.isdir(imagefolder2):
-        os.makedirs(imagefolder2)
+#     imagefolder2 = os.path.join(imagefolder, 'images')
+#     if not os.path.isdir(imagefolder2):
+#         os.makedirs(imagefolder2)
 		
 def DisplayText(fontSize, textToDisplay):
     global Numeral
@@ -219,7 +206,6 @@ def ShowPicture(file, delay):
     backgroundPicture.fill((0, 0, 0))
     img = pygame.image.load(file)
     img = pygame.transform.scale(img, screenPicture.get_size())  # Make the image full screen
-    #backgroundPicture.set_alpha(200)
     backgroundPicture.blit(img, (0,0))
     screen.blit(backgroundPicture, (0, 0))
     pygame.display.flip()  # update the display
@@ -250,7 +236,8 @@ def CapturePicture():
         global ImageShowed
         global CountDownPhoto
         global BackgroundColor	
-        global fileName
+        global Filename
+        global TmpFilename
         
         BackgroundColor = ""
         Numeral = ""
@@ -264,13 +251,13 @@ def CapturePicture():
         pygame.display.flip()        
         BackgroundColor = "black"
 
-        for x in range(3, -1, -1):
-                if x == 0:                        
-                        Numeral = ""
-                        Message = "PRENEZ LA POSE"
-                else:                        
-                        Numeral = str(x)
-                        Message = ""                
+        for x in range(3, 0, -1):
+                # if x == 0:                        
+                #         Numeral = ""
+                #         Message = "PRENEZ LA POSE"
+                # else:                        
+                Numeral = str(x)
+                Message = ""                
                 UpdateDisplay()
                 time.sleep(1)
 
@@ -279,13 +266,26 @@ def CapturePicture():
         Message = ""
         UpdateDisplay()
         imagecounter = imagecounter + 1
-        ts = time.time()
-        subprocess.call("~/git-repos/photoboothdiy/gphoto2.sh", shell=True)
-        fileName = "~/git-repos/photoboothdiy/tmp/capt0000.jpg"
-        time.sleep(10)
-        ShowPicture(fileName, 2)
-        ImageShowed = False
-        return fileName
+        
+        if os.path.isfile(TmpFilename):
+                os.remove(TmpFilename)
+        subprocess.call("/home/pi/git-repos/photoboothdiy/gphoto2.sh", shell=True)
+       
+        #Generate final image name        
+        Filename = os.path.join(imagefolder, time.strftime("Photobooth_%Y%m%d_%H%M%S.jpg"))
+        print("Filename = " + Filename)
+
+        #Tweak to avoid errors when writing on 
+        osChmodBackup = os.chmod
+        del os.chmod
+
+        #Move file
+        shutil.move(TmpFilename, Filename)       
+
+        # Set things back to normal
+        setattr(os, 'chmod', osChmodBackup)
+
+        return Filename 
     
         
 def TakePictures():
@@ -300,50 +300,54 @@ def TakePictures():
         global CountDownPhoto
         global BackgroundColor
         global Printing
-        global PhotosPerCart
         global TotalImageCount
 
         input(pygame.event.get())
+        # print("TakePictures pygame.event.get() => " + pygame.event.get())
+
         CountDownPhoto = "1/3"        
-        filename1 = Shoot()
+        filename1 = CapturePicture()        
 
-        ##CountDownPhoto = "2/3"
-        ##filename2 = CapturePicture()
+        CountDownPhoto = "2/3"
+        filename2 = CapturePicture()
 
-        ##CountDownPhoto = "3/3"
-        ##filename3 = CapturePicture()
+        CountDownPhoto = "3/3"
+        filename3 = CapturePicture()
 
         CountDownPhoto = ""
-        Message = "Attendez svp..."
         UpdateDisplay()
 
-        image1 = PIL.Image.open(filename1)
-        #image2 = PIL.Image.open(filename2)
-        #image3 = PIL.Image.open(filename3)   
-        TotalImageCount = TotalImageCount + 1
-        
-        bgimage.paste(image1, (625, 30))
-        #bgimage.paste(image2, (625, 410))
-        #bgimage.paste(image3, (55, 410))
+        # image1 = PIL.Image.open(filename1)
+        # image2 = PIL.Image.open(filename2)
+        # image3 = PIL.Image.open(filename3)   
+        TotalImageCount = TotalImageCount + 1        
+
+        ShowPicture(filename1 , 2)
+        ShowPicture(filename2 , 2)
+        ShowPicture(filename3 , 2)
+        ImageShowed = False
+
         # Create the final filename
         ts = time.time()
-        Final_Image_Name = os.path.join(imagefolder, str(TotalImageCount)+"_"+str(ts) + ".jpg")
-        # Save it to the usb drive
-        bgimage.save(Final_Image_Name)
-        # Save a temp file, its faster to print from the pi than usb
+
+        # Final_Image_Name = os.path.join(imagefolder, time.strftime("Photobooth", ts))
+        # Final_Image_Name = os.path.join(imagefolder, str(TotalImageCount)+"_"+str(ts) + ".png")
+        # # Save it to the usb drive
+        # bgimage.save(Final_Image_Name)
 
         ImageShowed = False
         
         UpdateDisplay()
         time.sleep(1)
-        Message = ""
+        Message = "Merci !!"
         UpdateDisplay()
         Numeral = ""
+        time.sleep(2)
 
-        Message = "Nous vous enverrons vos photos"
+        Message = "Nous vous enverrons vos photos ;)"
         Numeral = ""
         UpdateDisplay()
-        time.sleep(1)
+        time.sleep(2)
                 
         Message = ""
         Numeral = ""
@@ -359,15 +363,12 @@ def TakePictures():
 def WaitForEvent():
     global pygame
     NotEvent = True
-    Message = "WaitForEvent"
-    UpdateDisplay()
-
     while NotEvent:
-        # input_state = GPIO.input(BUTTON_PIN)
-        # if input_state == False:
-        #         NotEvent = False			
-        #         return  
-        for event in pygame.event.get():			
+        input_state = GPIO.input(BUTTON_PIN)
+        if input_state == False:
+                NotEvent = False			
+                return  
+        for event in pygame.event.get():	
                 if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                                 pygame.quit()
@@ -377,21 +378,13 @@ def WaitForEvent():
         time.sleep(0.2)
 
 def main(threadName, *args):
+    InitFolder()
+    while True:
+        show_image('images/start_camera.jpg')        
+        WaitForEvent()
+        time.sleep(0.2)
+        TakePictures()
     GPIO.cleanup()
-#     InitFolder()
-    InitGPIO()
-    button = Button(BUTTON_PIN)
-    button.when_pressed = Shoot()
-#     InitPyGame()
-#     while True:
-#         Message = 'Ready'
-#         UpdateDisplay()
-#         show_image('images/photobooth.bmp')
-#         time.sleep(3)
-#         WaitForEvent()
-#         time.sleep(0.2)
-#         #TakePictures()
-#     GPIO.cleanup()
 
 
 # launch the main thread
