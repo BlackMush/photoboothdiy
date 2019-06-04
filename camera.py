@@ -34,6 +34,7 @@ IMAGE_WIDTH = 550
 IMAGE_HEIGHT = 360
 
 pygame.init()  # Initialise pygame
+pygame.font.init()
 pygame.mouse.set_visible(False) #hide the mouse cursor
 infoObject = pygame.display.Info()
 screen = pygame.display.set_mode((infoObject.current_w,infoObject.current_h), pygame.FULLSCREEN)  # Full screen 
@@ -270,20 +271,23 @@ def CapturePicture():
         if os.path.isfile(TmpFilename):
                 os.remove(TmpFilename)
         subprocess.call("/home/pi/git-repos/photoboothdiy/gphoto2.sh", shell=True)
-       
-        #Generate final image name        
-        Filename = os.path.join(imagefolder, time.strftime("Photobooth_%Y%m%d_%H%M%S.jpg"))
-        print("Filename = " + Filename)
+        
+        if not os.path.isfile(TmpFilename):
+                Filename = "ERROR"
+        else:
+                #Generate final image name        
+                Filename = os.path.join(imagefolder, time.strftime("Photobooth_%Y%m%d_%H%M%S.jpg"))
+                print("Filename = " + Filename)
 
-        #Tweak to avoid errors when writing on 
-        osChmodBackup = os.chmod
-        del os.chmod
+                #Tweak to avoid errors when writing on 
+                osChmodBackup = os.chmod
+                del os.chmod
 
-        #Move file
-        shutil.move(TmpFilename, Filename)       
+                #Move file
+                shutil.move(TmpFilename, Filename)       
 
-        # Set things back to normal
-        setattr(os, 'chmod', osChmodBackup)
+                # Set things back to normal
+                setattr(os, 'chmod', osChmodBackup)
 
         return Filename 
     
@@ -317,14 +321,14 @@ def TakePictures():
         CountDownPhoto = ""
         UpdateDisplay()
 
-        # image1 = PIL.Image.open(filename1)
-        # image2 = PIL.Image.open(filename2)
-        # image3 = PIL.Image.open(filename3)   
         TotalImageCount = TotalImageCount + 1        
 
-        ShowPicture(filename1 , 2)
-        ShowPicture(filename2 , 2)
-        ShowPicture(filename3 , 2)
+        if filename1 != "ERROR":
+                ShowPicture(filename1 , 2)
+        if filename2 != "ERROR":
+                ShowPicture(filename2 , 2)
+        if filename3 != "ERROR":
+                ShowPicture(filename3 , 2)
         ImageShowed = False
 
         # Create the final filename
@@ -368,7 +372,8 @@ def WaitForEvent():
         if input_state == False:
                 NotEvent = False			
                 return  
-        for event in pygame.event.get():	
+        for event in pygame.event.get():
+                print "Loop through pygame.event.get"	
                 if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                                 pygame.quit()
