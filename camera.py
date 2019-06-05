@@ -49,22 +49,19 @@ backgroundPicture = background.convert()  # Convert it to a background
 transform_x = infoObject.current_w # how wide to scale the jpg when replaying
 transfrom_y = infoObject.current_h # how high to scale the jpg when replaying
 
-#Setup GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
     
 # A function to handle keyboard/mouse/device input events
 def input(events):
     for event in events:  # Hit the ESC key to quit the slideshow.
-        if (event.type == QUIT or
-                (event.type == KEYDOWN and event.key == K_ESCAPE)):
+        if (event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE)):
             pygame.quit()
 
 			
 # set variables to properly display the image on screen at right ratio
 def setDimensions(img_w, img_h):
-	# Note this only works when in booting in desktop mode. 
-	# When running in terminal, the size is not correct (it displays small). Why?
+    # Note this only works when in booting in desktop mode. 
+    # When running in terminal, the size is not correct (it displays small). Why?
 
     # connect to global vars
     global transform_y, transform_x, offset_y, offset_x
@@ -121,19 +118,19 @@ def DisplayText(fontSize, textToDisplay):
     global CountDownPhoto
 
     if (BackgroundColor != ""):
-            #print(BackgroundColor)
-            background.fill(pygame.Color("black"))
+        #print(BackgroundColor)
+        background.fill(pygame.Color("black"))
     if (textToDisplay != ""):
-            #print(displaytext)
-            font = pygame.font.Font(None, fontSize)
-            text = font.render(textToDisplay, 1, (227, 157, 200))
-            textpos = text.get_rect()
-            textpos.centerx = background.get_rect().centerx
-            textpos.centery = background.get_rect().centery
-            if(ImageShowed):
-                    backgroundPicture.blit(text, textpos)
-            else:
-                    background.blit(text, textpos)
+        #print(displaytext)
+        font = pygame.font.Font(None, fontSize)
+        text = font.render(textToDisplay, 1, (227, 157, 200))
+        textpos = text.get_rect()
+        textpos.centerx = background.get_rect().centerx
+        textpos.centery = background.get_rect().centery
+        if(ImageShowed):
+                backgroundPicture.blit(text, textpos)
+        else:
+                background.blit(text, textpos)
 				
 def UpdateDisplay():
     # init global variables from main thread
@@ -153,43 +150,43 @@ def UpdateDisplay():
     #DisplayText(500, CountDownPhoto)
 
     if (BackgroundColor != ""):
-            #print(BackgroundColor)
-            background.fill(pygame.Color("black"))
+        #print(BackgroundColor)
+        background.fill(pygame.Color("black"))
     if (Message != ""):
-            #print(displaytext)
-            font = pygame.font.Font(None, 100)
-            text = font.render(Message, 1, (227, 157, 200))
-            textpos = text.get_rect()
-            textpos.centerx = background.get_rect().centerx
-            textpos.centery = background.get_rect().centery
-            if(ImageShowed):
-                    backgroundPicture.blit(text, textpos)
-            else:
-                    background.blit(text, textpos)
+        #print(displaytext)
+        font = pygame.font.Font(None, 100)
+        text = font.render(Message, 1, (227, 157, 200))
+        textpos = text.get_rect()
+        textpos.centerx = background.get_rect().centerx
+        textpos.centery = background.get_rect().centery
+        if(ImageShowed):
+            backgroundPicture.blit(text, textpos)
+        else:
+            background.blit(text, textpos)
 
     if (Numeral != ""):
-            #print(displaytext)
-            font = pygame.font.Font(None, 800)
-            text = font.render(Numeral, 1, (227, 157, 200))
-            textpos = text.get_rect()
-            textpos.centerx = background.get_rect().centerx
-            textpos.centery = background.get_rect().centery
-            if(ImageShowed):
-                    backgroundPicture.blit(text, textpos)
-            else:
-                    background.blit(text, textpos)
+        #print(displaytext)
+        font = pygame.font.Font(None, 800)
+        text = font.render(Numeral, 1, (227, 157, 200))
+        textpos = text.get_rect()
+        textpos.centerx = background.get_rect().centerx
+        textpos.centery = background.get_rect().centery
+        if(ImageShowed):
+            backgroundPicture.blit(text, textpos)
+        else:
+            background.blit(text, textpos)
 
     if (CountDownPhoto != ""):
-            #print(displaytext)
-            font = pygame.font.Font(None, 500)
-            text = font.render(CountDownPhoto, 1, (227, 157, 200))
-            textpos = text.get_rect()
-            textpos.centerx = background.get_rect().centerx
-            textpos.centery = background.get_rect().centery
-            if(ImageShowed):
-                    backgroundPicture.blit(text, textpos)
-            else:
-                    background.blit(text, textpos)
+        #print(displaytext)
+        font = pygame.font.Font(None, 500)
+        text = font.render(CountDownPhoto, 1, (227, 157, 200))
+        textpos = text.get_rect()
+        textpos.centerx = background.get_rect().centerx
+        textpos.centery = background.get_rect().centery
+        if(ImageShowed):
+            backgroundPicture.blit(text, textpos)
+        else:
+            background.blit(text, textpos)
     
     if(ImageShowed == True):
     	screenPicture.blit(backgroundPicture, (0, 0))   	
@@ -226,139 +223,140 @@ def show_image(image_path):
 	pygame.display.flip()
 
 def CapturePicture():
-        global imagecounter
-        global imagefolder
-        global Numeral
-        global Message
-        global screen
-        global background
-        global screenPicture
-        global backgroundPicture
-        global pygame
-        global ImageShowed
-        global CountDownPhoto
-        global BackgroundColor	
-        global Filename
-        global TmpFilename
-        
-        BackgroundColor = ""
-        Numeral = ""
-        Message = ""
+    global imagecounter
+    global imagefolder
+    global Numeral
+    global Message
+    global screen
+    global background
+    global screenPicture
+    global backgroundPicture
+    global pygame
+    global ImageShowed
+    global CountDownPhoto
+    global BackgroundColor	
+    global Filename
+    global TmpFilename
+    
+    BackgroundColor = ""
+    Numeral = ""
+    Message = ""
+    UpdateDisplay()
+    time.sleep(1)
+    CountDownPhoto = ""
+    UpdateDisplay()
+    background.fill(pygame.Color("black"))
+    screen.blit(background, (0, 0))
+    pygame.display.flip()        
+    BackgroundColor = "black"
+
+    for x in range(3, 0, -1):
+        # if x == 0:                        
+        #         Numeral = ""
+        #         Message = "PRENEZ LA POSE"
+        # else:                        
+        Numeral = str(x)
+        Message = ""                
         UpdateDisplay()
         time.sleep(1)
-        CountDownPhoto = ""
-        UpdateDisplay()
-        background.fill(pygame.Color("black"))
-        screen.blit(background, (0, 0))
-        pygame.display.flip()        
-        BackgroundColor = "black"
 
-        for x in range(3, 0, -1):
-                # if x == 0:                        
-                #         Numeral = ""
-                #         Message = "PRENEZ LA POSE"
-                # else:                        
-                Numeral = str(x)
-                Message = ""                
-                UpdateDisplay()
-                time.sleep(1)
+    BackgroundColor = ""
+    Numeral = ""
+    Message = ""
+    UpdateDisplay()
+    imagecounter = imagecounter + 1
+    
+    if os.path.isfile(TmpFilename):
+        os.remove(TmpFilename)
 
-        BackgroundColor = ""
-        Numeral = ""
-        Message = ""
-        UpdateDisplay()
-        imagecounter = imagecounter + 1
-        
-        if os.path.isfile(TmpFilename):
-                os.remove(TmpFilename)
-        subprocess.call("/home/pi/git-repos/photoboothdiy/gphoto2.sh", shell=True)
-        
-        if not os.path.isfile(TmpFilename):
-                Filename = "ERROR"
-        else:
-                #Generate final image name        
-                Filename = os.path.join(imagefolder, time.strftime("Photobooth_%Y%m%d_%H%M%S.jpg"))
-                print("Filename = " + Filename)
+    subprocess.call("/home/pi/git-repos/photoboothdiy/gphoto2.sh", shell=True)
+    
+    if not os.path.isfile(TmpFilename):
+        Filename = "ERROR"
+    else:
+        #Generate final image name        
+        Filename = os.path.join(imagefolder, time.strftime("Photobooth_%Y%m%d_%H%M%S.jpg"))
+        print("Filename = " + Filename)
 
-                #Tweak to avoid errors when writing on 
-                osChmodBackup = os.chmod
-                del os.chmod
+        #Tweak to avoid errors when writing on 
+        osChmodBackup = os.chmod
+        del os.chmod
 
-                #Move file
-                shutil.move(TmpFilename, Filename)       
+        #Move file
+        shutil.move(TmpFilename, Filename)       
 
-                # Set things back to normal
-                setattr(os, 'chmod', osChmodBackup)
+        # Set things back to normal
+        setattr(os, 'chmod', osChmodBackup)
 
-        return Filename 
+    return Filename 
     
         
 def TakePictures():
-        global imagecounter
-        global imagefolder
-        global Numeral
-        global Message
-        global screen
-        global background
-        global pygame
-        global ImageShowed
-        global CountDownPhoto
-        global BackgroundColor
-        global Printing
-        global TotalImageCount
+    global imagecounter
+    global imagefolder
+    global Numeral
+    global Message
+    global screen
+    global background
+    global pygame
+    global ImageShowed
+    global CountDownPhoto
+    global BackgroundColor
+    global Printing
+    global TotalImageCount
 
-        input(pygame.event.get())
-        # print("TakePictures pygame.event.get() => " + pygame.event.get())
+    input(pygame.event.get())
+    # print("TakePictures pygame.event.get() => " + pygame.event.get())
 
-        CountDownPhoto = "1/3"        
-        filename1 = CapturePicture()        
+    CountDownPhoto = "1/3"        
+    filename1 = CapturePicture()        
 
-        CountDownPhoto = "2/3"
-        filename2 = CapturePicture()
+    CountDownPhoto = "2/3"
+    filename2 = CapturePicture()
 
-        CountDownPhoto = "3/3"
-        filename3 = CapturePicture()
+    CountDownPhoto = "3/3"
+    filename3 = CapturePicture()
 
-        CountDownPhoto = ""
-        UpdateDisplay()
+    CountDownPhoto = ""
+    UpdateDisplay()
 
-        TotalImageCount = TotalImageCount + 1        
+    TotalImageCount = TotalImageCount + 1        
 
-        if filename1 != "ERROR":
-                ShowPicture(filename1 , 2)
-        if filename2 != "ERROR":
-                ShowPicture(filename2 , 2)
-        if filename3 != "ERROR":
-                ShowPicture(filename3 , 2)
-        ImageShowed = False
+    if filename1 != "ERROR":
+        ShowPicture(filename1 , 2)
+    if filename2 != "ERROR":
+        ShowPicture(filename2 , 2)
+    if filename3 != "ERROR":
+        ShowPicture(filename3 , 2)
+    ImageShowed = False
 
-        # Create the final filename
-        ts = time.time()
+    # Create the final filename
+    ts = time.time()
 
-        # Final_Image_Name = os.path.join(imagefolder, time.strftime("Photobooth", ts))
-        # Final_Image_Name = os.path.join(imagefolder, str(TotalImageCount)+"_"+str(ts) + ".png")
-        # # Save it to the usb drive
-        # bgimage.save(Final_Image_Name)
+    # Final_Image_Name = os.path.join(imagefolder, time.strftime("Photobooth", ts))
+    # Final_Image_Name = os.path.join(imagefolder, str(TotalImageCount)+"_"+str(ts) + ".png")
+    # # Save it to the usb drive
+    # bgimage.save(Final_Image_Name)
 
-        ImageShowed = False
-        
-        UpdateDisplay()
-        time.sleep(1)
-        Message = "Merci !!"
-        UpdateDisplay()
-        Numeral = ""
-        time.sleep(2)
+    ImageShowed = False
+    
+    UpdateDisplay()
+    time.sleep(1)
+    Message = "Merci !!"
+    UpdateDisplay()
+    Numeral = ""
+    time.sleep(2)
 
-        Message = "Nous vous enverrons vos photos ;)"
-        Numeral = ""
-        UpdateDisplay()
-        time.sleep(2)
-                
-        Message = ""
-        Numeral = ""
-        ImageShowed = False
-        UpdateDisplay()
-        time.sleep(1)
+    Message = "Nous vous enverrons vos photos ;)"
+    Numeral = ""
+    UpdateDisplay()
+    time.sleep(2)
+            
+    Message = ""
+    Numeral = ""
+    ImageShowed = False
+    UpdateDisplay()
+    time.sleep(1)
 
 # def MyCallback(channel):
 #     global Printing
@@ -367,21 +365,28 @@ def TakePictures():
         
 def WaitForEvent():
     global pygame
+
+    #Setup GPIO
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
     NotEvent = True
     while NotEvent:
         input_state = GPIO.input(BUTTON_PIN)
-        if not input_state:
-                NotEvent = False	
-                print("Not event = False => return")		
-                return  
+        print("input_state = " + str(input_state))
+        if input_state:
+            NotEvent = False	
+            print("Not event = False => return")		
+            return  
         for event in pygame.event.get():
-                print("Loop through pygame.event.get")
-                if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                                pygame.quit()
-                        if event.key == pygame.K_DOWN:
-                                NotEvent = False
-                                return
+            print("Loop through pygame.event.get")
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                if event.key == pygame.K_DOWN:
+                        NotEvent = False
+                        return
+        
         time.sleep(0.2)
 
 def main(threadName, *args):
@@ -389,11 +394,10 @@ def main(threadName, *args):
     while True:
         show_image('images/start_camera.jpg')        
         WaitForEvent()
-        time.sleep(2)
-        TakePictures()
-
-        pygame.quit()
-        sys.exit()
+        time.sleep(0.2)
+        print("PHOTO !")
+        # TakePictures()
+        pygame.quit()        
         
     GPIO.cleanup()
 
