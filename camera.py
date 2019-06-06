@@ -373,19 +373,16 @@ def WaitForEvent():
     NotEvent = True
     while NotEvent:
         input_state = GPIO.input(BUTTON_PIN)
-        print("input_state = " + str(input_state))
         if input_state:
             NotEvent = False	
-            print("Not event = False => return")		
             return  
         for event in pygame.event.get():
-            print("Loop through pygame.event.get")
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                 if event.key == pygame.K_DOWN:
-                        NotEvent = False
-                        return
+                    NotEvent = False
+                    return
         
         time.sleep(0.2)
 
@@ -395,10 +392,8 @@ def main(threadName, *args):
         show_image('images/start_camera.jpg')        
         WaitForEvent()
         time.sleep(0.2)
-        print("PHOTO !")
-        # TakePictures()
-        pygame.quit()        
-        
+        # print("PHOTO !")
+        TakePictures()        
     GPIO.cleanup()
 
 
